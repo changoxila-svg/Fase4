@@ -1,0 +1,2 @@
+class ErrorClienteInvalido(Exception):
+    pass
