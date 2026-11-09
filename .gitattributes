@@ -1,2 +1,79 @@
-# Auto detect text files and perform LF normalization
+Gestion de clientes, servicios y reservas
+==============================================================================
+PROYECTO: SOFTWARE FJ - SISTEMA INTEGRAL INTERACTIVO POR TERMINAL
+MÓDULO: main2.py (Consola Interactiva - 100% Terminal CMD / PowerShell)
+CURSO: Programación (Código 213023) - Unidad 2 - Paso 4: Laboratorio POO
+UNIVERSIDAD NACIONAL ABIERTA Y A DISTANCIA (UNAD)
+
+DISTRIBUCIÓN OFICIAL DE ROLES:
+  1. Claudia Trujillo:
+     • Entidad abstracta (EntidadBase)
+     • Clase Cliente con encapsulación de atributos privados y validaciones robustas.
+  2. Erick Sánchez:
+     • Clase abstracta Servicio
+     • 3 clases especializadas con polimorfismo: ReservaSala, AlquilerEquipo, AsesoriaEspecializada.
+     • Coordinación y arquitectura del sistema.
+  3. Alejandro Gómez (Alejo):
+     • Métodos sobrecargados de cálculo de costos (base, impuestos IVA, descuentos).
+     • Sistema de registro de eventos y errores en archivo de texto (logger.py).
+  4. Daniel David Escobar Reina:
+     • Clase Reserva (integración de cliente, servicio, duración, estados).
+     • Flujo con manejo de excepciones (try / except / else / finally y encadenamiento).
+     • Gestor de reservas y repositorio en memoria (GestorReservas).
+=============================================================================
+from src.entidades.entidad_base import EntidadBase
+from src.utils.excepciones import ErrorClienteInvalido
+
+class Cliente(EntidadBase):
+    """
+    CLASE CLIENTE - DESARROLLADA POR: Claudia Trujillo
+    Aplica encapsulación estricta y validación de datos personales.
+    """
+    def __init__(self, id_cliente: str, nombre: str, email: str, celular: str):
+        # Inicializa la clase abstracta base
+        super().__init__(id_cliente)
+        
+        # Atributos privados encapsulados
+        self.__nombre = None
+        self.__email = None
+        self.__celular = None
+        
+        # Asignación pasando obligatoriamente por los filtros de validación
+        self.nombre = nombre
+        self.email = email
+        self.celular = celular
+
+    # --- ENCAPSULACIÓN Y VALIDACIÓN DEL NOMBRE ---
+    @property
+    def nombre(self) -> str:
+        return self.__nombre
+
+    @nombre.setter
+    def nombre(self, valor: str):
+        if not valor or len(valor.strip()) < 3:
+            raise ErrorClienteInvalido("El nombre del cliente debe tener al menos 3 caracteres.")
+        self.__nombre = valor.strip()
+
+    # --- ENCAPSULACIÓN Y VALIDACIÓN DEL EMAIL ---
+    @property
+    def email(self) -> str:
+        return self.__email
+
+    @email.setter
+    def email(self, valor: str):
+        if "@" not in valor or "." not in valor:
+            raise ErrorClienteInvalido(f"El correo '{valor}' no tiene un formato válido (ej: usuario@dominio.com).")
+        self.__email = valor.strip()
+
+    # --- ENCAPSULACIÓN Y VALIDACIÓN DEL CELULAR ---
+    @property
+    def celular(self) -> str:
+        return self.__celular
+
+    @celular.setter
+    def celular(self, valor: str):
+        # Validación ajustada a la longitud estricta de telefonía celular en Colombia (10 dígitos)
+        if not valor or not valor.isdigit() or len(valor) != 10:
+            raise ErrorClienteInvalido(f"El número celular '{valor}' debe contener exactamente 10 dígitos numéricos.")
+        self.__celular = valor# Auto detect text files and perform LF normalization
 * text=auto
