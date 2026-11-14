@@ -1,0 +1,15 @@
+name: Validar Codigo Python
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probar servicio.py
+        run: |
+          python -c "from entidades.servicio import Servicio, ReservaSala, AlquilerEquipo, AsesoriaEspecializada; s = ReservaSala('S1', 'Sala A', 20000, 10); print(s.describir_servicio()); print('Costo 3h:', s.calcular_costo(3)); print('Prueba completada con exito')"
