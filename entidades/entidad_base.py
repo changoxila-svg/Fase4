@@ -20,3 +20,8 @@ class EntidadBase(ABC):
     def id_cliente(self) -> str:
         """Retorna el identificador de la entidad."""
         return self._id_entidad
+
+    @abstractmethod
+    def resumen(self) -> str:
+        """Método obligatorio que deben implementar las subclases."""
+        pass
