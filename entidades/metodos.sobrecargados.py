@@ -2,7 +2,7 @@
 ==============================================================================
 MÓDULO: utils/calculo_costos.py
 RESPONSABLE: Alejandro Gomez
-DESCRIPCIÓN:
+DESCRIPCION:
     Métodos SOBRECARGADOS para el cálculo de costos (base, IVA, descuentos).
 
     NOTA SOBRE SOBRECARGA EN PYTHON:
