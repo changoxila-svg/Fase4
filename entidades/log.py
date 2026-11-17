@@ -2,7 +2,7 @@
 ==============================================================================
 MÓDULO: utils/logger.py
 RESPONSABLE: Alejandro Gomez
-DESCRIPCIÓN:
+DESCRIPCION:
     Sistema de registro de eventos y errores en archivo de texto.
     Cumple el requisito: "Un archivo de logs donde se registren todos los
     errores y eventos relevantes".
