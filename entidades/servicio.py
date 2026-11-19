@@ -61,6 +61,10 @@ class Servicio(EntidadBase):
                 f"El servicio '{self._nombre}' (ID: {self.id_servicio}) no se encuentra disponible actualmente."
             )
 
+    def resumen(self) -> str:
+        """Implementa resumen() de EntidadBase usando la descripción del servicio."""
+        return self.describir_servicio()
+
     # ── Métodos abstractos (Exigidos por la guía UNAD) ─────────────────────────
     @abstractmethod
     def calcular_costo(self, duracion: float) -> float:
