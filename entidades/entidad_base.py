@@ -1,12 +1,4 @@
-
-
-"""
-------------------------------------------------------------------------------
-MÓDULO: entidad_base.py
-AUTORA: Claudia Trujillo (Rol: EntidadAbstracta)
-------------------------------------------------------------------------------
-"""
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class EntidadBase(ABC):
@@ -20,6 +12,16 @@ class EntidadBase(ABC):
         self._id_entidad = id_entidad.strip()
 
     @property
-    def id_cliente(self) -> str:
-        """Retorna el identificador de la entidad."""
+    def id_entidad(self) -> str:
+        """Retorna el identificador general de la entidad."""
         return self._id_entidad
+
+    @property
+    def id_cliente(self) -> str:
+        """Alias para compatibilidad con la clase Cliente."""
+        return self._id_entidad
+
+    def resumen(self) -> str:
+        """Retorna una descripción resumida de la entidad."""
+        return f"Entidad [{self._id_entidad}]"
+
