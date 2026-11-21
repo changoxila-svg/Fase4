@@ -11,11 +11,15 @@ DESCRIPCIÓN: Integra un cliente, un servicio y una duración, y controla el
 import math
 
 from entidades.entidad_base import EntidadBase
+from utils.calculo_costos import ErrorCalculoCosto
+from utils.logger import obtener_logger
 from utils.excepciones import (
     ErrorReservaInvalida,
     ErrorEstadoReserva,
     ErrorServicioNoDisponible,
 )
+
+log = obtener_logger()
 
 
 class Reserva(EntidadBase):
@@ -23,10 +27,9 @@ class Reserva(EntidadBase):
     CONFIRMADA = "CONFIRMADA"
     CANCELADA = "CANCELADA"
 
-    def __init__(self, id_reserva: str, cliente, servicio, duracion):
-        # EntidadBase lanza ValueError si el ID está vacío: se encadena
+    def _init_(self, id_reserva: str, cliente, servicio, duracion):
         try:
-            super().__init__(id_reserva)
+            super()._init_(id_reserva)
         except ValueError as err:
             raise ErrorReservaInvalida("El ID de la reserva no es válido o está vacío.") from err
 
@@ -39,7 +42,8 @@ class Reserva(EntidadBase):
         self.__estado = Reserva.PENDIENTE
 
         self._verificar_disponibilidad()
-        self.duracion = duracion  # pasa por el setter con validación
+        self.duracion = duracion
+        log.evento(f"Reserva creada: {self.resumen()}", origen="Reserva")
 
     # --- Propiedades ---------------------------------------------------------
     @property
@@ -64,7 +68,6 @@ class Reserva(EntidadBase):
 
     @duracion.setter
     def duracion(self, valor):
-        # Excepción encadenada: el error original queda como causa (__cause__)
         try:
             cantidad = float(valor)
         except (ValueError, TypeError) as err:
@@ -73,7 +76,6 @@ class Reserva(EntidadBase):
         if not math.isfinite(cantidad) or cantidad <= 0:
             raise ErrorReservaInvalida("La duración debe ser un número mayor que 0.")
 
-        # Cada servicio (de Erick) valida sus propios límites y lanza ValueError
         try:
             self.__servicio.validar_parametros(cantidad)
         except ValueError as err:
@@ -88,32 +90,39 @@ class Reserva(EntidadBase):
         except ErrorServicioNoDisponible as err:
             raise ErrorReservaInvalida(f"No se puede reservar: {err}") from err
 
-    def calcular_total(self) -> float:
-        """Pide el costo al servicio (polimorfismo: cada servicio calcula distinto)."""
+    def calcular_total(self, iva=None, descuento=None) -> float:
+        """Pide el costo al servicio (polimorfismo y sobrecarga con IVA/descuento)."""
         try:
-            return self.__servicio.calcular_costo(self.__duracion)
-        except (ValueError, ErrorServicioNoDisponible) as err:
+            return self._servicio.calcular_costo(self._duracion, iva=iva, descuento=descuento)
+        except (ValueError, ErrorServicioNoDisponible, ErrorCalculoCosto) as err:
+            log.error(f"Error calculando total de reserva [{self.id_reserva}]", excepcion=err, origen="Reserva")
             raise ErrorReservaInvalida(f"No se pudo calcular el total: {err}") from err
 
     # --- Control de estados --------------------------------------------------
     def confirmar(self):
         if self.__estado != Reserva.PENDIENTE:
-            raise ErrorEstadoReserva(
+            err = ErrorEstadoReserva(
                 f"Solo se puede confirmar una reserva PENDIENTE (estado actual: {self.__estado})."
             )
+            log.error(f"Cambio de estado inválido en [{self.id_reserva}]", excepcion=err, origen="Reserva")
+            raise err
         self._verificar_disponibilidad()
         self.__estado = Reserva.CONFIRMADA
+        log.evento(f"Reserva [{self.id_reserva}] CONFIRMADA", origen="Reserva")
 
     def cancelar(self):
         if self.__estado == Reserva.CANCELADA:
-            raise ErrorEstadoReserva("La reserva ya estaba cancelada.")
+            err = ErrorEstadoReserva("La reserva ya estaba cancelada.")
+            log.error(f"Intento de cancelar dos veces [{self.id_reserva}]", excepcion=err, origen="Reserva")
+            raise err
         self.__estado = Reserva.CANCELADA
+        log.evento(f"Reserva [{self.id_reserva}] CANCELADA", origen="Reserva")
 
     # --- Presentación --------------------------------------------------------
     def resumen(self) -> str:
         return (f"[{self.id_reserva}] Cliente: {self.__cliente.nombre} | "
                 f"Servicio: {self.__servicio.nombre} | "
-                f"Duración: {self.__duracion:g} | Estado: {self.__estado}")
+                f"Duración: {self._duracion:g} | Estado: {self._estado}")
 
-    def __str__(self):
+    def _str_(self):
         return self.resumen()
