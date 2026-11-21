@@ -17,17 +17,10 @@ DESCRIPCIÓN:
 """
 from functools import singledispatchmethod
 
+from utils.excepciones import ErrorCalculoCosto
 from utils.logger import obtener_logger
 
 log = obtener_logger()
-
-
-class ErrorCalculoCosto(Exception):
-    """
-    Excepción personalizada para cálculos inconsistentes.
-    (Si el equipo ya la define en utils/excepciones.py, se puede mover allí
-    y cambiar el import.)
-    """
 
 
 class CalculadoraCostos:
