@@ -1,8 +1,8 @@
 """
 ==============================================================================
-MÓDULO: entidades/metodos_sobrecargados.py
-RESPONSABLE: Alejandro Gomez
-DESCRIPCION:
+MÓDULO: entidades/calculo_costos.py
+RESPONSABLE: Alejandro Gómez
+DESCRIPCIÓN:
     Métodos SOBRECARGADOS para el cálculo de costos (base, IVA, descuentos).
 
     NOTA SOBRE SOBRECARGA EN PYTHON:
@@ -17,13 +17,17 @@ DESCRIPCION:
 """
 from functools import singledispatchmethod
 
-from entidades.log import obtener_log
+from entidades.logger import obtener_logger
 
 log = obtener_logger()
 
 
 class ErrorCalculoCosto(Exception):
-
+    """
+    Excepción personalizada para cálculos inconsistentes.
+    (Si el equipo ya la define en entidades/excepciones.py, se puede mover allí
+    y cambiar el import.)
+    """
 
 
 class CalculadoraCostos:
@@ -171,7 +175,7 @@ class CalculadoraCostos:
 
 
 # ==============================================================================
-# Prueba rápida:  python -m utils.calculo_costos   (desde la raíz del proyecto)
+# Prueba rápida:  python -m entidades.calculo_costos   (desde la raíz del proyecto)
 # ==============================================================================
 if __name__ == "__main__":
     calc = CalculadoraCostos()
