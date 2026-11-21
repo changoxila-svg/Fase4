@@ -21,9 +21,8 @@ class EntidadBase(ABC):
         """Alias para compatibilidad con la clase Cliente."""
         return self._id_entidad
 
-    def resumen(self) -> str:
-        """Retorna una descripción resumida de la entidad."""
-        return f"Entidad [{self._id_entidad}]"
+    
+    
 
     @abstractmethod
     def resumen(self) -> str:
