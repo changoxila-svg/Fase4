@@ -1,6 +1,6 @@
 """
 ==============================================================================
-MÓDULO: utils/calculo_costos.py
+MÓDULO: entidades/metodos.sobrecargados.py
 RESPONSABLE: Alejandro Gomez
 DESCRIPCION:
     Métodos SOBRECARGADOS para el cálculo de costos (base, IVA, descuentos).
@@ -17,7 +17,7 @@ DESCRIPCION:
 """
 from functools import singledispatchmethod
 
-from utils.logger import obtener_logger
+from entidades.logger import obtener_logger
 
 log = obtener_logger()
 
