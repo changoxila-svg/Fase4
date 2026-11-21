@@ -25,3 +25,7 @@ class EntidadBase(ABC):
         """Retorna una descripción resumida de la entidad."""
         return f"Entidad [{self._id_entidad}]"
 
+    @abstractmethod
+    def resumen(self) -> str:
+        """Cada entidad concreta debe implementar su resumen."""
+        raise NotImplementedError
