@@ -88,6 +88,9 @@ class Cliente(EntidadBase):
             raise ErrorClienteInvalido(f"El número celular '{valor}' debe contener exactamente 10 dígitos numéricos.")
         self.__celular = valor
 
+    def resumen(self) -> str:
+        """Implementa el método abstracto resumen() heredado de EntidadBase."""
+        return f"[CLIENTE] {self.nombre} (ID: {self._id_entidad}) | Email: {self.email} | Cel: {self.celular}"
 
 # ==============================================================================
 # BLOQUE DE EJECUCIÓN PRINCIPAL (Para iniciar el programa en la terminal)
