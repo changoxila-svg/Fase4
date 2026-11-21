@@ -128,4 +128,5 @@ if __name__ == "__main__":
             raise RuntimeError("No se pudo procesar la reserva") from causa
     except RuntimeError as err:
         log.error("Fallo en reserva", excepcion=err, origen="Reserva")
+        log.critico("Fallo crítico simulado en el subsistema", excepcion=err, origen="Sistema")
     print(f"Revisa el archivo: {ARCHIVO_LOG}")
