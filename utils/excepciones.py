@@ -21,3 +21,8 @@ class ErrorEstadoReserva(ErrorReservaInvalida):
 class ErrorReservaNoEncontrada(Exception):
     """Excepción lanzada cuando se busca una reserva que no existe."""
     pass
+
+
+class ErrorCalculoCosto(Exception):
+    """Excepción personalizada para cálculos de costos inconsistentes o parámetros inválidos."""
+    pass
