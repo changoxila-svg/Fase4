@@ -8,7 +8,7 @@ DESCRIPCIÓN: Define la clase abstracta Servicio y 3 clases hijas polimórficas:
                2. AlquilerEquipo
                3. AsesoriaEspecializada
              Implementa los métodos obligatorios:
-               - calcular_costo()
+               - calcular_costo() (conectado con CalculadoraCostos sobrecargada)
                - describir_servicio()
                - validar_parametros()
              Manejo de excepciones:
@@ -18,6 +18,11 @@ DESCRIPCIÓN: Define la clase abstracta Servicio y 3 clases hijas polimórficas:
 from abc import abstractmethod
 from entidades.entidad_base import EntidadBase
 from utils.excepciones import ErrorServicioNoDisponible
+from utils.calculo_costos import CalculadoraCostos
+from utils.logger import obtener_logger
+
+_calculadora = CalculadoraCostos()
+log = obtener_logger()
 
 
 class Servicio(EntidadBase):
@@ -32,6 +37,7 @@ class Servicio(EntidadBase):
         self._nombre = nombre
         self._precio_base = float(precio_base)
         self._disponible = True
+        log.evento(f"Servicio registrado: [{self.id_servicio}] {self._nombre} (${self._precio_base})", origen="Servicio")
 
     # ── Propiedades ───────────────────────────────────────────────────────────
     @property
@@ -53,13 +59,17 @@ class Servicio(EntidadBase):
     @disponible.setter
     def disponible(self, valor: bool):
         self._disponible = bool(valor)
+        estado_txt = "DISPONIBLE" if self._disponible else "NO DISPONIBLE"
+        log.evento(f"Estado de servicio [{self.id_servicio}] cambiado a {estado_txt}", origen="Servicio")
 
     def validar_disponibilidad(self):
         """Valida si el servicio se encuentra activo; lanza ErrorServicioNoDisponible si no lo está."""
         if not self._disponible:
-            raise ErrorServicioNoDisponible(
+            err = ErrorServicioNoDisponible(
                 f"El servicio '{self._nombre}' (ID: {self.id_servicio}) no se encuentra disponible actualmente."
             )
+            log.error("Intento de uso de servicio inactivo", excepcion=err, origen="Servicio")
+            raise err
 
     def resumen(self) -> str:
         """Implementa resumen() de EntidadBase usando la descripción del servicio."""
@@ -67,8 +77,8 @@ class Servicio(EntidadBase):
 
     # ── Métodos abstractos (Exigidos por la guía UNAD) ─────────────────────────
     @abstractmethod
-    def calcular_costo(self, duracion: float) -> float:
-        """Calcula el costo total según la tarifa específica del servicio."""
+    def calcular_costo(self, duracion: float, iva=None, descuento=None) -> float:
+        """Calcula el costo total apoyándose en la calculadora sobrecargada (base, IVA y descuentos)."""
         pass
 
     @abstractmethod
@@ -102,10 +112,10 @@ class ReservaSala(Servicio):
             raise ValueError(f"La duración en sala debe ser entre 1 y 8 horas. Recibido: {duracion}")
         return True
 
-    def calcular_costo(self, duracion: float) -> float:
+    def calcular_costo(self, duracion: float, iva=None, descuento=None) -> float:
         self.validar_disponibilidad()
         self.validar_parametros(duracion)
-        return round(self.precio_base * duracion, 2)
+        return _calculadora.calcular_costo(self.precio_base, duracion, iva=iva, descuento=descuento)
 
     def describir_servicio(self) -> str:
         return f"[SALA] {self.nombre} | Capacidad: {self.capacidad} personas | Tarifa: ${self.precio_base}/hora"
@@ -125,11 +135,12 @@ class AlquilerEquipo(Servicio):
             raise ValueError("El alquiler de equipo debe ser de al menos 1 día.")
         return True
 
-    def calcular_costo(self, duracion: float) -> float:
+    def calcular_costo(self, duracion: float, iva=None, descuento=None) -> float:
         self.validar_disponibilidad()
         self.validar_parametros(duracion)
-        # Costo = (precio por día * días) + seguro obligatorio
-        return round((self.precio_base * duracion) + self._seguro, 2)
+        # Costo = costo por días calculado con sobrecarga (IVA/descuento) + seguro obligatorio
+        costo_dias = _calculadora.calcular_costo(self.precio_base, duracion, iva=iva, descuento=descuento)
+        return round(costo_dias + self._seguro, 2)
 
     def describir_servicio(self) -> str:
         return f"[EQUIPO] {self.nombre} | Seguro: ${self._seguro} | Tarifa: ${self.precio_base}/día"
@@ -149,10 +160,10 @@ class AsesoriaEspecializada(Servicio):
             raise ValueError("Las sesiones de asesoría deben ser mayores a 0.")
         return True
 
-    def calcular_costo(self, duracion: float) -> float:
+    def calcular_costo(self, duracion: float, iva=None, descuento=None) -> float:
         self.validar_disponibilidad()
         self.validar_parametros(duracion)
-        return round(self.precio_base * duracion, 2)
+        return _calculadora.calcular_costo(self.precio_base, duracion, iva=iva, descuento=descuento)
 
     def describir_servicio(self) -> str:
         return f"[ASESORÍA] {self.nombre} | Área: {self._area} | Tarifa: ${self.precio_base}/sesión"
