@@ -1,6 +1,6 @@
 """
 ==============================================================================
-MÓDULO: utils/logger.py
+MÓDULO: entidades/log.py
 RESPONSABLE: Alejandro Gomez
 DESCRIPCION:
     Sistema de registro de eventos y errores en archivo de texto.
