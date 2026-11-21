@@ -1,8 +1,8 @@
 """
 ==============================================================================
-MÓDULO: utils/logger.py
-RESPONSABLE: Alejandro Gomez
-DESCRIPCION:
+MÓDULO: entidades/logger.py
+RESPONSABLE: Alejandro Gómez
+DESCRIPCIÓN:
     Sistema de registro de eventos y errores en archivo de texto.
     Cumple el requisito: "Un archivo de logs donde se registren todos los
     errores y eventos relevantes".
@@ -19,7 +19,7 @@ DESCRIPCION:
 import logging
 import os
 
-# Carpeta raíz del proyecto (un nivel arriba de /utils)
+# Carpeta raíz del proyecto (un nivel arriba de /entidades)
 RAIZ_PROYECTO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RUTA_LOGS = os.path.join(RAIZ_PROYECTO, "logs")
 ARCHIVO_LOG = os.path.join(RUTA_LOGS, "software_fj.log")
@@ -115,7 +115,7 @@ def obtener_logger() -> RegistroEventos:
 
 
 # ==============================================================================
-# Prueba rápida:  python utils/logger.py
+# Prueba rápida:  python entidades/logger.py
 # ==============================================================================
 if __name__ == "__main__":
     log = obtener_logger()
